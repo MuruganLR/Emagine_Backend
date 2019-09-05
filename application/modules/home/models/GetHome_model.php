@@ -89,7 +89,7 @@ class GetHome_model extends CI_Model
 		$this->db->join($arrTables[1],$join_condition[0],'inner');
 		$this->db->join($arrTables[2],$join_condition[1],'inner');
 		//'j.`job_type_id`', '1' -- is for hot hob type
-		$this->db->where('o.`statusId`', '3')->where('j.`job_type_id`', '1')->where("(o.`noPositionsTotal` - o.`noPositionsClosed`)!= 0")->where("CURRENT_DATE BETWEEN DATE(start_date) AND DATE(end_date)",NULL,False);
+		$this->db->where('o.`statusId`', '3')->where('j.`job_type_id`', '1')->where("(o.`noPositionsTotal` - o.`noPositionsClosed`)!= 0")->where("DATE(DATE_ADD(UTC_TIMESTAMP(), INTERVAL 5.30 HOUR)) BETWEEN DATE(start_date) AND DATE(end_date)",NULL,False);
 		$this->db->group_by('o.id');
 		$query = $this->db->get();
 		$result= $query->result();

@@ -6,7 +6,7 @@ class GetFilteredJobDetails_model extends CI_Model
 	public function getFilteredJobDetails($fieldvalArr)
 	{		
 		$noData = array();
-		$joinTbls = 'left JOIN `job_category_details` `jcd` ON `jcd`.`job_id`= `o`.`id` and CURRENT_DATE BETWEEN DATE(jcd.start_date) AND DATE(jcd.end_date) 
+		$joinTbls = 'left JOIN `job_category_details` `jcd` ON `jcd`.`job_id`= `o`.`id` and DATE(DATE_ADD(UTC_TIMESTAMP(), INTERVAL 5.30 HOUR)) BETWEEN DATE(jcd.start_date) AND DATE(jcd.end_date) 
 	 				 left JOIN `job_types` `jt` ON `jcd`.`job_type_id`= `jt`.`id`';
 		$str='';
 		$a=0;

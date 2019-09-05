@@ -45,4 +45,23 @@ class GetJobDetails extends REST_Controller
         $response = array('vendor_pipeline' => $pipelineDtl);
         $this->response($response, 200);
     }
+
+    public function getOpeningJobsByBuId_get()
+    {
+        $buId = $this->get('buId');
+        $this->load->model('GetJobDetails_model');
+        $pipelineDtl = $this->GetJobDetails_model->getOpeningJobsByBuId($buId);
+        $response = array('job_list' => $pipelineDtl);
+        $this->response($response, 200);
+    }
+
+    public function getJobListWitRateCard_get()
+    {
+        $buId = $this->get('buId');
+        $openingId = $this->get('openingId');
+        $this->load->model('GetJobDetails_model');
+        $pipelineDtl = $this->GetJobDetails_model->getJobListWitRateCard($buId, $openingId);
+        $response = array('job_list' => $pipelineDtl);
+        $this->response($response, 200);
+    }
 }

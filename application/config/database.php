@@ -75,7 +75,9 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
+	//'hostname' => 'localhost',
+	'hostname' => '148.72.201.28',
+	'port' => '3306',
 	'username' => 'emagine_db_user',
 	'password' => 'Admin123!',
 	'database' => 'emagine_db_prd',

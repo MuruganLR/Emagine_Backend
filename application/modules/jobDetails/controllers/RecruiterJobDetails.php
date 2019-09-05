@@ -51,4 +51,28 @@ class RecruiterJobDetails extends REST_Controller
         $this->response($response, 200);
     }
 
+    public function insertRateCardForVendor_post()
+    {
+        $openingId = $this->post('openingId');
+        $buId = $this->post('buId');
+        $fromDate = $this->post('fromDate');
+        $tillDate = $this->post('tillDate');
+        $fixedShare = $this->post('fixedShare');
+        $fixedShareInPerc = $this->post('fixedShareInPerc');
+        $bonusShare = $this->post('bonusShare');
+        $bonusShareInPerc = $this->post('bonusShareInPerc');
+        $createdBy = $this->post('createdBy');
+        $res = $this->RecruiterJobDetails_model->insertRateCardForVendor($openingId, $buId, $fromDate, $tillDate, $fixedShare, $fixedShareInPerc, $bonusShare, $bonusShareInPerc, $createdBy);
+        $response = $res;
+        $this->response($response, 200);
+    }
+    
+    public function deleteRateCardForVendor_get()
+    {
+        $id = $this->get('id');
+        $res = $this->RecruiterJobDetails_model->deleteRateCardForVendor($id);
+        $response = $res;
+        $this->response($response, 200);
+    }
+
 }

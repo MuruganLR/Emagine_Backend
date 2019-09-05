@@ -19,12 +19,12 @@ class GetJobDetails_model extends CI_Model
 		$selectfields[10]="IFNULL (o.`address`,'') as address";		
 		$selectfields[11]="IFNULL (o.`coordinator`,'') as coordinator";
 		$selectfields[12]="IFNULL (o.`hiringManager`,'') as hiringManager";
-		$selectfields[13]="IFNULL (o.`activationDate`,'') as activationDate";	
+		$selectfields[13]="IFNULL (DATE_FORMAT(o.`activationDate`,'%d-%m-%Y'),'') as activationDate";	
 		$selectfields[14]="IFNULL (o.`crStreamName`,'') as crStreamName";
 		$selectfields[15]="IFNULL (o.`noPositionsTotal`- o.`noPositionsClosed`,'') as openPositions"; // TotalOpen Possitions
 		$selectfields[16]="IFNULL (o.`id`,'') as jobid";
 		$selectfields[17]="IFNULL (group_concat(jcd.`job_type_id`),'') as job_type_id";
-		$selectfields[18]="IFNULL (group_concat(concat(jt.`job_type`,'|',date(jcd.start_date),'|',date(jcd.end_date),'|', jcd.job_type_id,'|',IFNULL(jcd.`comment`,''),'|',IFNULL(jcd.`title`,''))),'') as job_type_data";
+		$selectfields[18]="IFNULL (group_concat(concat(jt.`job_type`,'|',DATE_FORMAT(jcd.start_date,'%d-%m-%Y'),'|',DATE_FORMAT(jcd.end_date,'%d-%m-%Y'),'|', jcd.job_type_id,'|',IFNULL(jcd.`comment`,''),'|',IFNULL(jcd.`title`,''))),'') as job_type_data";
 		$selectfields[19]="IFNULL (o.`openingId`,'') as openingId";
 		$selectfields[20] ="IFNULL (group_concat(jcd.`comment`),'') as comment";
 		$selectfields[21] ="IFNULL (group_concat(jcd.`title`),'') as title";
@@ -38,7 +38,7 @@ class GetJobDetails_model extends CI_Model
         $selectfields[29] = "IFNULL(o.offeredCount, 0) as offered_count";
         $selectfields[30] = "IFNULL(o.joinedCount,0) as joined_count";
         $selectfields[31] = "IFNULL(o.exitCount,0) as exit_count";
-		$selectfields[32] = "IFNULL(DATE_FORMAT(DATE_ADD(DATE_ADD(o.API_called_date, INTERVAL 12 HOUR), INTERVAL 30 MINUTE),'%d-%b-%Y %r'),'') as pipeline_updated_date";
+		$selectfields[32] = "IFNULL(DATE_FORMAT(o.API_called_date,'%d-%b-%Y %r'),'') as pipeline_updated_date";
 		
 		
 		$arrTables[0] =  "`business_unit_list` "." `b`";
@@ -47,7 +47,7 @@ class GetJobDetails_model extends CI_Model
 		$arrTables[3] = "`job_types` "." `jt`";
 			
 		$join_condition[0]="b.buId= o.buId";	
-		$join_condition[1]="jcd.job_id= o.id and CURRENT_DATE BETWEEN DATE(jcd.start_date) AND DATE(jcd.end_date)";
+		$join_condition[1]="jcd.job_id= o.id and DATE(DATE_ADD(UTC_TIMESTAMP(), INTERVAL 5.30 HOUR)) BETWEEN DATE(jcd.start_date) AND DATE(jcd.end_date)";
 		$join_condition[2]="jcd.job_type_id= jt.id";
 	
 		
@@ -158,7 +158,8 @@ class GetJobDetails_model extends CI_Model
 	
 	public function getVendorPipeline($vendorId){
 		$noData = array();
-		$SQL = "select jpd.openingId, jpd.sourceId, jpd.sourcing as sourcing_count, jpd.screening as screening_count, jpd.assessment as assessment_count, jpd.negotiation as negotiation_count, jpd.offered as offered_count, jpd.joined as joined_count, jpd.exit as exit_coint from job_pipeline_details jpd where jpd.sourceId = ".$vendorId."";
+		// $SQL = "select jpd.openingId, jpd.sourceId, jpd.sourcing as sourcing_count, jpd.screening as screening_count, jpd.assessment as assessment_count, jpd.negotiation as negotiation_count, jpd.offered as offered_count, jpd.joined as joined_count, jpd.exit as exit_coint from job_pipeline_details jpd where jpd.sourceId = ".$vendorId."";
+		$SQL = "select jpd.openingId, jpd.sourceId, jpd.sourcing as sourcing_count, jpd.screening as screening_count, jpd.assessment as assessment_count, jpd.negotiation as negotiation_count, jpd.offered as offered_count, jpd.joined as joined_count, jpd.exit as exit_count from job_pipeline_details jpd join cv_source_list cv on cv.applicantSourceId = jpd.sourceId join users u on u.user_name = cv.srcShortName where u.id = ".$vendorId."";
 		$query = $this->db->query($SQL);
 		$result = $query->result();
         if (!empty($result)) {
@@ -168,4 +169,49 @@ class GetJobDetails_model extends CI_Model
         }
 	}
 			
+	public function getOpeningJobsByBuId($buId){
+		$noData = array();
+		if($buId > 0){
+			$SQL = "select o.openingId, o.openTitle, o.buId, o.createdDate from opening_details o where o.buId = ".$buId." and statusId = 3 order by o.openingId desc";
+		}
+		else{
+			$SQL = "select o.openingId, o.openTitle, o.buId, o.createdDate from opening_details o where statusId = 3 order by o.openingId desc";
+		}
+		
+		$query = $this->db->query($SQL);
+		$result = $query->result();
+        if (!empty($result)) {
+            return $result;
+        } else {
+            return $noData;
+        }
+	}
+
+	public function getJobListWitRateCard($buId, $openingId){
+		$noData = array();
+		$join_con = "";
+		if($buId == 0 && $openingId == 0){
+		    $join_con = " and convert(now(), date) between rmv.fromDate and rmv.tillDate ";
+		}
+		
+		$sql = "select o.openingId, o.openTitle, o.createdDate, DATE_FORMAT(rmv.fromDate,'%d-%m-%Y') as fromDate, DATE_FORMAT(rmv.tillDate,'%d-%m-%Y')  as tillDate, case when rmv.fixedShareInPerc > 0 then Concat(rmv.fixedShareInPerc,'%') when rmv.fixedShare > 0 then Concat('₹',rmv.fixedShare) else (select concat(c.fixedShareInPerc,'%') from configurations c limit 1) end fixedShare, case when rmv.BonusShareInPerc > 0 then Concat(rmv.BonusShareInPerc,'%') when rmv.BonusShare > 0 then Concat('₹',rmv.BonusShare) else (select concat(c.BonusShareInPerc,'%') from configurations c limit 1) end as bonusShare, rmv.id, rmv.openingId as rcOpeningId from opening_details o
+		left join ratecard_buid_mapping rmv on rmv.buId = o.buId and rmv.openingId in (0, o.openingId) " . $join_con . "
+		where o.statusId = 3";
+		if($buId > 0){
+			$sql = $sql . " and o.buId = ".$buId;
+		}
+		
+		if($openingId > 0){
+			$sql = $sql . " and o.openingId = ".$openingId;
+		}
+		$sql = $sql . " order by o.buId, o.openingId, rmv.id desc";
+		
+		$query = $this->db->query($sql);
+		$result = $query->result();
+        if (!empty($result)) {
+            return $result;
+        } else {
+            return $noData;
+        }
+	}
 }
