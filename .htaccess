@@ -2,7 +2,7 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule .* index.php/$0 [PT,L]
-RewriteBase /emagine_services/
+RewriteBase /Emagine_Backend-1/
 RewriteCond $1 !^(index\.php|images|assets|robots\.txt)
 RewriteRule ^(.*)$ /index.html/$1 [L]
 RewriteCond %{REQUEST_METHOD} OPTIONS

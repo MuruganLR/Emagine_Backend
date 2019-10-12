@@ -23,8 +23,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://emagine.co.in/emagine_services/';
-
+//$config['base_url'] = 'http://emagine.co.in/emagine_services/';
+$config['base_url'] = 'http://localhost/Emagine_Backend-1';
 /*
 |--------------------------------------------------------------------------
 | Index File
