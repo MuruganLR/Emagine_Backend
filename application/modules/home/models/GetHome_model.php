@@ -63,18 +63,27 @@ class GetHome_model extends CI_Model
 		
 	}
 	
+	
+	
 	public function getHotJobsDetails(){
 		
-		$selectfields[0]="IFNULL (o.`id`,'') as id";
-		$selectfields[1]="IFNULL (o.`openTitle`,'') as openTitle";
-		$selectfields[2]="IFNULL (concat(concat(SUBSTRING_INDEX(o.`ctcCurrency`, '_', -1),'',':'),' ',o.`ctcBandLowEnd`,'-',o.`ctcBandHighEnd`),'') as minCurrencyVal"; // Total Opened Positions
-		$selectfields[3]="IFNULL (b.`logo_path`,'') as logo_path";
-		$selectfields[4]="IFNULL (o.`address`,'') as addressCity";
-		$selectfields[5]="IFNULL (o.`employmentType`,'') as employmentType";
-		$selectfields[6]="IFNULL (b.`buName`,'') as compnyname";
-		$selectfields[7]="IFNULL (j.`comment`,'') as comment";
-		$selectfields[8]="IFNULL (o.`noPositionsTotal` - o.`noPositionsClosed`,'') as totalPositions"; // Total Opened Positions
-		$selectfields[9]="IFNULL (j.`title`,'') as title";
+		
+		$selectfields[0]="IFNULL (b.`buId`,'') as buId";
+		$selectfields[1]="IFNULL (count(o.`id`),'') as id";
+		$selectfields[2]="IFNULL (j.`title`,'') as title";
+		$selectfields[3]="IFNULL (b.`buName`,'') as compnyname";
+		$selectfields[4]="IFNULL (b.`logo_path`,'') as logo_path";
+		
+
+	//	$selectfields[1]="IFNULL (o.`openTitle`,'') as openTitle";
+	//	$selectfields[2]="IFNULL (concat(concat(SUBSTRING_INDEX(o.`ctcCurrency`, '_', -1),'',':'),' ',o.`ctcBandLowEnd`,'-',o.`ctcBandHighEnd`),'') as minCurrencyVal"; // Total Opened Positions
+	//	$selectfields[3]="IFNULL (b.`logo_path`,'') as logo_path";
+	//	$selectfields[4]="IFNULL (o.`address`,'') as addressCity";
+	//	$selectfields[5]="IFNULL (o.`employmentType`,'') as employmentType";
+		
+	//	$selectfields[7]="IFNULL (j.`comment`,'') as comment";
+	//	$selectfields[8]="IFNULL (o.`noPositionsTotal` - o.`noPositionsClosed`,'') as totalPositions"; // Total Opened Positions
+		
 		
 		$arrTables[0] =  "`business_unit_list` "." `b`";
 		$arrTables[1] = "`opening_details` "." `o`";
@@ -90,16 +99,16 @@ class GetHome_model extends CI_Model
 		$this->db->join($arrTables[2],$join_condition[1],'inner');
 		//'j.`job_type_id`', '1' -- is for hot hob type
 		$this->db->where('o.`statusId`', '3')->where('j.`job_type_id`', '1')->where("(o.`noPositionsTotal` - o.`noPositionsClosed`)!= 0")->where("CURRENT_DATE BETWEEN DATE(start_date) AND DATE(end_date)",NULL,False);
-		$this->db->group_by('o.id');
+		$this->db->group_by('b.buId');
 		$query = $this->db->get();
 		$result= $query->result();
+		
 		if(!empty($result))
 			return $result;
 		else
 			return '';
 	}
-	
-	
+
 	public function getRegisteredRecCount(){
        //select count(*) from employee_list where wowRoleId = '1' and enabled ='1'
 		$select_query=array();

@@ -12,7 +12,7 @@ class GetHome extends REST_Controller {
 		$topCompanyDtls=array();
 		$trendingIndustry = array();
 		$HotJobDtls = array();
-		
+		$HotJobLists = array();
 		
 		$allData =array();
 		$this->load->model('GetHome_model');
@@ -28,7 +28,7 @@ class GetHome extends REST_Controller {
 		$HotJobDtl=$this->GetHome_model->getHotJobsDetails();
 		if(!empty($HotJobDtl))
 		$HotJobDtls = array_chunk($HotJobDtl, 12);
-		
+
 		$registeredRec=$this->GetHome_model->getRegisteredRecCount();
 		
 		$registeredEmp=$this->GetHome_model->getRegisteredEmpCount();
@@ -42,10 +42,7 @@ class GetHome extends REST_Controller {
 		$trendingIndustry=$this->GetHome_model->getTrendingIndustries();
 		if(!empty($trendingIndustry))
 		$trendingIndustries = array_chunk($trendingIndustry, 5);
-		
-		
-		
-		
+				
 		$homeDetails = array('compnyList'=>$topCompanyDtls,'topcompLogo'=>$topCompanylogo,'registeredRecCount'=>$registeredRec,'registeredEmpCount'=>$registeredEmp,'placedCandidateCount'=>$placedCandidate,'trendingIndustries'=>$trendingIndustries,'hotJobDetails'=>$HotJobDtls,'totalJobListings'=>$totalJobListings);
 		
 		//echo "SuccessAlldata<pre>";print_r($allData);die();
