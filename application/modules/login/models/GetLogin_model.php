@@ -9,7 +9,7 @@ class GetLogin_model extends CI_Model
         //session_start();
         $uniqID = '0';
         $select_query = array();
-        var_dump($input['loginAs']);
+        //var_dump($input['loginAs']);
         if ($input['loginAs'] == "Rock Client") {
             $select = array(
                 'IFNULL (`id`,"") as id',
@@ -44,7 +44,7 @@ class GetLogin_model extends CI_Model
             $db_select_query = $this->db->get()->result_array();
         }
 
-        var_dump($db_select_query);
+        //var_dump($db_select_query);
         if (!empty($db_select_query)) {
             $uid = $db_select_query[0]['id'] . '|';
             $uniqID = uniqid($uid);

@@ -32,7 +32,9 @@ class GetRecRegistration_model extends CI_Model
 		        
 		$this->db->select($select);
 		$this->db->from($arrTables);
-		$this->db->order_by("FIELD (status, 'Pending', 'Approve', 'Reject')");	
+		//$this->db->order_by("FIELD (status, 'Pending', 'Approve', 'Reject')");	
+		$this->db->where('status != "Approve"');
+		$this->db->order_by('id', "desc");
 		$db_select_query=$this->db->get()->result_array();
 
 		if (!empty($db_select_query))

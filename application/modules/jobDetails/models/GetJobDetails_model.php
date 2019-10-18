@@ -194,9 +194,12 @@ class GetJobDetails_model extends CI_Model
 		    $join_con = " and convert(now(), date) between rmv.fromDate and rmv.tillDate ";
 		}
 		
-		$sql = "select o.openingId, o.openTitle, o.createdDate, DATE_FORMAT(rmv.fromDate,'%d-%m-%Y') as fromDate, DATE_FORMAT(rmv.tillDate,'%d-%m-%Y')  as tillDate, case when rmv.fixedShareInPerc > 0 then Concat(rmv.fixedShareInPerc,'%') when rmv.fixedShare > 0 then Concat('₹',rmv.fixedShare) else (select concat(c.fixedShareInPerc,'%') from configurations c limit 1) end fixedShare, case when rmv.BonusShareInPerc > 0 then Concat(rmv.BonusShareInPerc,'%') when rmv.BonusShare > 0 then Concat('₹',rmv.BonusShare) else (select concat(c.BonusShareInPerc,'%') from configurations c limit 1) end as bonusShare, rmv.id, rmv.openingId as rcOpeningId from opening_details o
+		$sql = "select o.openingId, o.openTitle, o.buId, o.createdDate, o.crStreamName, o.office, o.hiringManager, o.ctcCurrency from opening_details o where o.buId = ".$buId." and o.statusId = 3 order by o.openingId desc";
+		
+		/*$sql = "select o.openingId, o.openTitle, o.createdDate, DATE_FORMAT(rmv.fromDate,'%d-%m-%Y') as fromDate, DATE_FORMAT(rmv.tillDate,'%d-%m-%Y')  as tillDate, case when rmv.fixedShareInPerc > 0 then Concat(rmv.fixedShareInPerc,'%') when rmv.fixedShare > 0 then Concat('₹',rmv.fixedShare) else (select concat(c.fixedShareInPerc,'%') from configurations c limit 1) end fixedShare, case when rmv.BonusShareInPerc > 0 then Concat(rmv.BonusShareInPerc,'%') when rmv.BonusShare > 0 then Concat('₹',rmv.BonusShare) else (select concat(c.BonusShareInPerc,'%') from configurations c limit 1) end as bonusShare, rmv.id, rmv.openingId as rcOpeningId from opening_details o
 		left join ratecard_buid_mapping rmv on rmv.buId = o.buId and rmv.openingId in (0, o.openingId) " . $join_con . "
 		where o.statusId = 3";
+		
 		if($buId > 0){
 			$sql = $sql . " and o.buId = ".$buId;
 		}
@@ -204,7 +207,8 @@ class GetJobDetails_model extends CI_Model
 		if($openingId > 0){
 			$sql = $sql . " and o.openingId = ".$openingId;
 		}
-		$sql = $sql . " order by o.buId, o.openingId, rmv.id desc";
+		
+		$sql = $sql . " order by o.buId, o.openingId, rmv.id desc";*/
 		
 		$query = $this->db->query($sql);
 		$result = $query->result();
@@ -214,4 +218,23 @@ class GetJobDetails_model extends CI_Model
             return $noData;
         }
 	}
+	
+	public function getClientJobList($buId, $openingId){
+		$noData = array();
+		$join_con = "";
+		if($buId == 0 && $openingId == 0){
+		    $join_con = " and convert(now(), date) between rmv.fromDate and rmv.tillDate ";
+		}
+		
+		$sql = "select o.openingId, o.openTitle, o.buId,  o.createdDate, o.crStreamName, o.office, o.hiringManager, o.ctcCurrency from opening_details o where o.buId = ".$buId." and o.statusId = 3 order by o.openingId desc";
+		
+		$query = $this->db->query($sql);
+		$result = $query->result();
+        if (!empty($result)) {
+            return $result;
+        } else {
+            return $noData;
+        }
+	}
+
 }

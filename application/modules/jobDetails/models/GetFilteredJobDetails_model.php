@@ -81,7 +81,7 @@ class GetFilteredJobDetails_model extends CI_Model
 				IFNULL (o.`openingId`,'') as openingId,
 				IFNULL (group_concat(jcd.`comment`),'') as comment,
 				IFNULL (group_concat(jcd.`title`),'') as title,
-				if(jcd.`job_type_id` is Not NULL && jcd.`job_type_id` !='' , 'hotjobclass','') as hotjobclass, ifnull(o.sourcingcount,0) as sourcing_count, ifnull(o.screeningcount,0) as screening_count, ifnull(o.assessmentcount,0) as assessment_count,ifnull(o.negotiation,0) as negotiation_count,ifnull(o.offered,0) as offered_count,ifnull(o.joined,0) as joined_count,ifnull(o.exit,0) as exit_count
+				if(jcd.`job_type_id` is Not NULL && jcd.`job_type_id` !='' , 'hotjobclass','') as hotjobclass, ifnull(o.sourcingcount,0) as sourcing_count, ifnull(o.screeningcount,0) as screening_count, ifnull(o.assessmentcount,0) as assessment_count,ifnull(o.negotiationsCount,0) as negotiation_count,ifnull(o.offeredCount,0) as offered_count,ifnull(o.joinedCount,0) as joined_count,ifnull(o.exitCount,0) as exit_count
 				from business_unit_list b inner join opening_details o on (b.buId= o.buId) $joinTbls where o.`statusId` = 3 and (o.`noPositionsTotal` - o.`noPositionsClosed`)!= 0  $conditionsStr  group by o.id order by jt.id desc, o.openingId desc";
 
         $query = $this->db->query($sql);
